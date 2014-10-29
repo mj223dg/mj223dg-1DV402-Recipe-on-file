@@ -130,9 +130,12 @@ namespace FiledRecipes.Domain
         public void Load()
         {
             Recipe recipe = null;
-            List<IRecipe> recipeList = new List<IRecipe>; 
+            // Själva listan för recepten.
+            List<IRecipe> recipeList = new List<IRecipe>(); 
+
             RecipeReadStatus status = new RecipeReadStatus();
-            //Läser in datan
+
+            //Läser in .txt.
             using (StreamReader sr = new StreamReader(_path))
             {
                 string line;
@@ -157,6 +160,7 @@ namespace FiledRecipes.Domain
                     {
                         if(status == RecipeReadStatus.New)
                         {
+                            //Lägger till recepten i listan.
                             recipe = new Recipe(line);
                             recipeList.Add(recipe);
                         }
@@ -170,6 +174,7 @@ namespace FiledRecipes.Domain
                         {
                             throw new FileFormatException();
                         }
+                            //Lägger in mängd, mått och namn i arrayen.
                             Ingredient Ing = new Ingredient();
                             Ing.Amount = ingredients[0];
                             Ing.Measure = ingredients[1];
@@ -178,6 +183,7 @@ namespace FiledRecipes.Domain
                         } 
                         else if(status == RecipeReadStatus.Instruction)
                         {
+                            //Lägger till instruktioner.
                             recipe.Add(line);
                         }
                          
@@ -188,11 +194,32 @@ namespace FiledRecipes.Domain
                     }
                 }
             }
+            // Sorterar recepten efter receptens namn.
             _recipes = recipeList.OrderBy( r => r.Name).ToList();
             
+            //Berättar att värdet ej är förändrat.
             IsModified = false;
-
+            
+            //Anropar metoden OnRecipesChanged och skicar med parametern EventArgs.Empty.
             OnRecipesChanged(EventArgs.Empty);
+        }
+        public void Save()
+        {
+            using (StreamWriter sw = new StreamWriter(_path))
+            {
+                foreach(IRecipe recipes in _recipes)
+                    {
+                        sw.WriteLine(SectionRecipe);
+                        sw.WriteLine(recipes.Name);
+                        sw.WriteLine(SectionIngredients);
+
+                    foreach
+                    {
+
+                    }
+                    }
+                
+            }
         }
     }
 }
